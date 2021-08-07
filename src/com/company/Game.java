@@ -8,12 +8,17 @@ public class Game {
     public Map<Integer, Integer> diceOnTable = new HashMap<>();
     public final byte MAX_PLAYERS = 6;
     public final byte MIN_PLAYERS = 1;
-    public boolean isRoundStartingPlayer = false;
-    public int roundCount = 0;
-    public int openingRoundBidDieQty;
-    public int openingRoundBidDieFaceValue;
-    public int playerGuessDieQty;
-    public int playerGuessDieFaceValue;
+    public boolean isRoundStartingPlayer = true;
+    public int previousBidDieQty;
+    public int previousBidDieFaceValue;
+    public int currentGuessDieQty;
+    public int currentGuessDieFaceValue;
+    public boolean isValidBid = false;
+    public boolean isActiveRound = false;
+    public boolean callLie = false;
+    public boolean isALie = false;
+    public boolean isActiveGame = false;
+
 
 
     public Game() {
@@ -31,13 +36,20 @@ public class Game {
     }
 
     public void play() {
+        isActiveGame = true;
+        isActiveRound = true;
         round();
+
     }
 
     public void round() {
         rollAll();
+        if (!callLie) {
         turn();
+        validateBid(currentGuessDieQty, currentGuessDieFaceValue);
+        }
 
+        declareWinner();
     }
 
     public void rollAll() {
@@ -60,28 +72,95 @@ public class Game {
 
     public void turn() {
         for (Player activePlayer : playerList) {
-            System.out.println(activePlayer.playName + "'s turn.");
+
+            System.out.println(activePlayer.playerName + "'s turn.");
             System.out.println(activePlayer.cup.displayHand());
 
+            if (isRoundStartingPlayer) {
+                roundOpenBid();
+                isRoundStartingPlayer = false;
+            } else {
+                playerBid(activePlayer);
+                if (callLie) {
+                    checkLie(activePlayer);
+                }
+            }
         }
+
 
     }
 
     public void roundOpenBid() {
         System.out.println("Make your bid.");
         System.out.println("Enter die qty: ");
-        openingRoundBidDieQty = scanner.nextInt();
+        currentGuessDieQty = scanner.nextByte();
         System.out.println("Enter die face value: ");
-        openingRoundBidDieFaceValue = scanner.nextInt();
+        currentGuessDieFaceValue = scanner.nextByte();
         scanner.nextLine();
+        System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
     }
 
-    public void playerBid() {
+    public void playerBid(Player activePlayer) {
+
+        previousBidDieQty = currentGuessDieQty;
+        previousBidDieFaceValue = currentGuessDieFaceValue;
+        System.out.println("the previous bid " + previousBidDieQty + "x " + previousBidDieFaceValue);
         System.out.println("Type (b) to bid or (l) to call Liar");
         String bidOrCall = scanner.nextLine();
         if (bidOrCall.equals("b")) {
             System.out.println("Enter die qty: ");
+            currentGuessDieQty = scanner.nextByte();
+            System.out.println("Enter die facevalue: ");
+            currentGuessDieFaceValue = scanner.nextByte();
+            System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
+        } else if (bidOrCall.equals("l")) {
+            callLie = true;
+            isActiveRound = false;
+        }
+    }
+//    Bid must have a qty and a face value.
+//    Bid can not equal the previous bid.
+//    Qty of the bid can equal, be less than, or greater than previous as long as the faceValue is greater.
+//    If the faceValue of the bid is equal to the faceValue of the previous bid. The qty must be greater.
+    public void validateBid(int qty, int faceValue) {
+        if (faceValue > previousBidDieFaceValue) {
+            System.out.println("Valid Bid");
+            isValidBid = true;
+        } else if (faceValue == previousBidDieFaceValue && qty > previousBidDieQty) {
+            System.out.println("Valid Bid");
+            isValidBid = true;
+        } else {
+            System.out.println("Invalid Bid");
+        }
+    }
 
+    public void checkLie(Player activePlayer) {
+        isALie = !diceOnTable.containsKey(previousBidDieFaceValue) || diceOnTable.get(previousBidDieFaceValue) < previousBidDieQty;
+        if (isALie) {
+            System.out.println("bid was a lie");
+            System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).playerName + " loses a die.");
+            playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice.remove(0);
+//            System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice);
+
+
+        } else {
+            System.out.println("Bid was not a lie you lose a die");
+            playerList.get(playerList.indexOf(activePlayer)).cup.dice.remove(0);
+
+        }
+
+        if (playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice.size() == 0) {
+            System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).playerName + " is out of dice. You are out of the game");
+            //playerList.remove(playerList.get(playerList.indexOf(activePlayer) - 1));
+           }
+    }
+
+    public void declareWinner() {
+        for (Player players : playerList) {
+            if (playerList.size() == 1) {
+                System.out.println(players + " is the winner, Game Over.");
+                isActiveGame = false;
+            }
         }
     }
 

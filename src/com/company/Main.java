@@ -6,5 +6,7 @@ public class Main {
 
         Game liarsDice = new Game();
         liarsDice.play();
+
+
     }
 }
