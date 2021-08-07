@@ -8,6 +8,13 @@ public class Game {
     public Map<Integer, Integer> diceOnTable = new HashMap<>();
     public final byte MAX_PLAYERS = 6;
     public final byte MIN_PLAYERS = 1;
+    public boolean isRoundStartingPlayer = false;
+    public int roundCount = 0;
+    public int openingRoundBidDieQty;
+    public int openingRoundBidDieFaceValue;
+    public int playerGuessDieQty;
+    public int playerGuessDieFaceValue;
+
 
     public Game() {
         System.out.println("Enter number of players: ");
@@ -55,6 +62,26 @@ public class Game {
         for (Player activePlayer : playerList) {
             System.out.println(activePlayer.playName + "'s turn.");
             System.out.println(activePlayer.cup.displayHand());
+
+        }
+
+    }
+
+    public void roundOpenBid() {
+        System.out.println("Make your bid.");
+        System.out.println("Enter die qty: ");
+        openingRoundBidDieQty = scanner.nextInt();
+        System.out.println("Enter die face value: ");
+        openingRoundBidDieFaceValue = scanner.nextInt();
+        scanner.nextLine();
+    }
+
+    public void playerBid() {
+        System.out.println("Type (b) to bid or (l) to call Liar");
+        String bidOrCall = scanner.nextLine();
+        if (bidOrCall.equals("b")) {
+            System.out.println("Enter die qty: ");
+
         }
     }
 
