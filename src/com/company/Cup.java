@@ -7,7 +7,7 @@ public class Cup {
     List<Die> dice = new ArrayList<>();
 
     public Cup() {
-        while (dice.size() < 1) {
+        while (dice.size() < 2) {
         dice.add(new Die());
         }
     }

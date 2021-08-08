@@ -44,12 +44,14 @@ public class Game {
 
     public void round() {
         rollAll();
-        if (!callLie) {
+        while (isActiveRound) {
         turn();
-        validateBid(currentGuessDieQty, currentGuessDieFaceValue);
         }
+//        if (callLie = false ) {
+//        validateBid(currentGuessDieQty, currentGuessDieFaceValue);
+//        }
 
-        declareWinner();
+
     }
 
     public void rollAll() {
@@ -70,6 +72,7 @@ public class Game {
         }
     }
 
+    // TODO: 8/7/2021 need to implement a loop of turns in a round.
     public void turn() {
         for (Player activePlayer : playerList) {
 
@@ -81,7 +84,11 @@ public class Game {
                 isRoundStartingPlayer = false;
             } else {
                 playerBid(activePlayer);
+                if (!callLie) {
+                validateBid(currentGuessDieQty, currentGuessDieFaceValue);
+                }
                 if (callLie) {
+                    showHands();
                     checkLie(activePlayer);
                 }
             }
@@ -97,7 +104,7 @@ public class Game {
         System.out.println("Enter die face value: ");
         currentGuessDieFaceValue = scanner.nextByte();
         scanner.nextLine();
-        System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
+//        System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
     }
 
     public void playerBid(Player activePlayer) {
@@ -113,6 +120,7 @@ public class Game {
             System.out.println("Enter die facevalue: ");
             currentGuessDieFaceValue = scanner.nextByte();
             System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
+            scanner.nextLine();
         } else if (bidOrCall.equals("l")) {
             callLie = true;
             isActiveRound = false;
@@ -122,6 +130,7 @@ public class Game {
 //    Bid can not equal the previous bid.
 //    Qty of the bid can equal, be less than, or greater than previous as long as the faceValue is greater.
 //    If the faceValue of the bid is equal to the faceValue of the previous bid. The qty must be greater.
+// TODO: 8/7/2021 didn't fire validate bid.
     public void validateBid(int qty, int faceValue) {
         if (faceValue > previousBidDieFaceValue) {
             System.out.println("Valid Bid");
@@ -140,6 +149,8 @@ public class Game {
             System.out.println("bid was a lie");
             System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).playerName + " loses a die.");
             playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice.remove(0);
+            isActiveRound = false;
+
 //            System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice);
 
 
@@ -155,12 +166,19 @@ public class Game {
            }
     }
 
+    // TODO: 8/7/2021 need to call this method at end of game.
     public void declareWinner() {
         for (Player players : playerList) {
             if (playerList.size() == 1) {
                 System.out.println(players + " is the winner, Game Over.");
                 isActiveGame = false;
             }
+        }
+    }
+
+    public void showHands() {
+        for (Player players : playerList) {
+            System.out.println(players.playerName + "'s Hand " + players.cup.displayHand());
         }
     }
 
