@@ -35,23 +35,25 @@ public class Game {
         }
     }
 
+    // TODO: 8/8/2021 need to find where to call declare winner method. 
     public void play() {
         isActiveGame = true;
-        isActiveRound = true;
         round();
+        declareWinner();
+
 
     }
 
     public void round() {
         rollAll();
+        isActiveRound = true;
         while (isActiveRound) {
         turn();
         }
+
 //        if (callLie = false ) {
 //        validateBid(currentGuessDieQty, currentGuessDieFaceValue);
 //        }
-
-
     }
 
     public void rollAll() {
@@ -90,6 +92,7 @@ public class Game {
                 if (callLie) {
                     showHands();
                     checkLie(activePlayer);
+                    play();
                 }
             }
         }
@@ -130,7 +133,7 @@ public class Game {
 //    Bid can not equal the previous bid.
 //    Qty of the bid can equal, be less than, or greater than previous as long as the faceValue is greater.
 //    If the faceValue of the bid is equal to the faceValue of the previous bid. The qty must be greater.
-// TODO: 8/7/2021 didn't fire validate bid.
+
     public void validateBid(int qty, int faceValue) {
         if (faceValue > previousBidDieFaceValue) {
             System.out.println("Valid Bid");
@@ -143,6 +146,7 @@ public class Game {
         }
     }
 
+    // TODO: 8/8/2021 after lie call is evaluated an new round with new player hands must start.
     public void checkLie(Player activePlayer) {
         isALie = !diceOnTable.containsKey(previousBidDieFaceValue) || diceOnTable.get(previousBidDieFaceValue) < previousBidDieQty;
         if (isALie) {
@@ -157,12 +161,15 @@ public class Game {
         } else {
             System.out.println("Bid was not a lie you lose a die");
             playerList.get(playerList.indexOf(activePlayer)).cup.dice.remove(0);
+            isActiveRound = false;
 
         }
 
         if (playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice.size() == 0) {
             System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).playerName + " is out of dice. You are out of the game");
-            //playerList.remove(playerList.get(playerList.indexOf(activePlayer) - 1));
+            playerList.remove(playerList.get(playerList.indexOf(activePlayer) - 1));
+            isActiveRound = false;
+
            }
     }
 
@@ -179,6 +186,9 @@ public class Game {
     public void showHands() {
         for (Player players : playerList) {
             System.out.println(players.playerName + "'s Hand " + players.cup.displayHand());
+            diceOnTable.clear();
+            isRoundStartingPlayer = true;
+
         }
     }
 
