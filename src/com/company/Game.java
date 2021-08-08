@@ -22,6 +22,9 @@ public class Game {
 
 
     public Game() {
+        if (!isActiveGame) {
+            System.out.println("Welcome to Liars Dice.");
+        }
         System.out.println("Enter number of players: ");
         int numberOfPlayers;
         do {
@@ -34,26 +37,20 @@ public class Game {
             playerList.add(new Player((scanner.nextLine()).trim()));
         }
     }
-
-    // TODO: 8/8/2021 need to find where to call declare winner method. 
+    
     public void play() {
         isActiveGame = true;
         round();
         declareWinner();
-
-
     }
 
     public void round() {
+        System.out.println("New Round");
         rollAll();
         isActiveRound = true;
         while (isActiveRound) {
         turn();
         }
-
-//        if (callLie = false ) {
-//        validateBid(currentGuessDieQty, currentGuessDieFaceValue);
-//        }
     }
 
     public void rollAll() {
@@ -61,6 +58,7 @@ public class Game {
             activePlayer.cup.roll();
             setDiceOnTable(activePlayer.cup.dice);
         }
+        // TODO: 8/8/2021 comment out when testing is complete. 
         System.out.println(diceOnTable);
     }
 
@@ -73,14 +71,11 @@ public class Game {
             }
         }
     }
-
-    // TODO: 8/7/2021 need to implement a loop of turns in a round.
+    
     public void turn() {
         for (Player activePlayer : playerList) {
-
             System.out.println(activePlayer.playerName + "'s turn.");
-            System.out.println(activePlayer.cup.displayHand());
-
+            System.out.println("Your Hand is " + activePlayer.cup.displayHand());
             if (isRoundStartingPlayer) {
                 roundOpenBid();
                 isRoundStartingPlayer = false;
@@ -88,16 +83,14 @@ public class Game {
                 playerBid(activePlayer);
                 if (!callLie) {
                 validateBid(currentGuessDieQty, currentGuessDieFaceValue);
-                }
-                if (callLie) {
+                } else  {
                     showHands();
                     checkLie(activePlayer);
                     play();
                 }
             }
         }
-
-
+        
     }
 
     public void roundOpenBid() {
@@ -111,7 +104,6 @@ public class Game {
     }
 
     public void playerBid(Player activePlayer) {
-
         previousBidDieQty = currentGuessDieQty;
         previousBidDieFaceValue = currentGuessDieFaceValue;
         System.out.println("the previous bid " + previousBidDieQty + "x " + previousBidDieFaceValue);
@@ -146,7 +138,8 @@ public class Game {
         }
     }
 
-    // TODO: 8/8/2021 after lie call is evaluated an new round with new player hands must start.
+    // TODO: 8/8/2021 bugged when player calls lie and previous bid was true, lie always returns as a lie by play1 and play1 always loses. 
+    // TODO: 8/8/2021 lie crashes program if called after first round. 
     public void checkLie(Player activePlayer) {
         isALie = !diceOnTable.containsKey(previousBidDieFaceValue) || diceOnTable.get(previousBidDieFaceValue) < previousBidDieQty;
         if (isALie) {
@@ -154,31 +147,26 @@ public class Game {
             System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).playerName + " loses a die.");
             playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice.remove(0);
             isActiveRound = false;
-
 //            System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice);
-
-
         } else {
             System.out.println("Bid was not a lie you lose a die");
             playerList.get(playerList.indexOf(activePlayer)).cup.dice.remove(0);
             isActiveRound = false;
-
         }
-
         if (playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice.size() == 0) {
             System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).playerName + " is out of dice. You are out of the game");
             playerList.remove(playerList.get(playerList.indexOf(activePlayer) - 1));
             isActiveRound = false;
-
-           }
+            declareWinner();
+        }
     }
-
-    // TODO: 8/7/2021 need to call this method at end of game.
+    
     public void declareWinner() {
         for (Player players : playerList) {
             if (playerList.size() == 1) {
-                System.out.println(players + " is the winner, Game Over.");
+                System.out.println(players.playerName + " is the winner, Game Over.");
                 isActiveGame = false;
+                System.exit(0);
             }
         }
     }
@@ -188,8 +176,7 @@ public class Game {
             System.out.println(players.playerName + "'s Hand " + players.cup.displayHand());
             diceOnTable.clear();
             isRoundStartingPlayer = true;
-
         }
     }
-
+    
 }

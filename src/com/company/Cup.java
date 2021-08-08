@@ -21,7 +21,7 @@ public class Cup {
     public String displayHand() {
         String hand = "";
         for (Die die : dice) {
-            hand += die.faceValue + " ";
+            hand += die.faceValue + "," + " ";
         }
         return hand.trim();
 
