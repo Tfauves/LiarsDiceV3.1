@@ -8,11 +8,11 @@ public class Game {
     public Map<Integer, Integer> diceOnTable = new HashMap<>();
     public final byte MAX_PLAYERS = 6;
     public final byte MIN_PLAYERS = 1;
-    public boolean isRoundStartingPlayer = true;
     public int previousBidDieQty;
     public int previousBidDieFaceValue;
     public int currentGuessDieQty;
     public int currentGuessDieFaceValue;
+    public boolean isRoundStartingPlayer = true;
     public boolean isValidBid = false;
     public boolean isActiveRound = false;
     public boolean callLie = false;
@@ -113,10 +113,10 @@ public class Game {
         if (bidOrCall.equals("b")) {
             System.out.println("Enter die qty: ");
             currentGuessDieQty = scanner.nextByte();
-            System.out.println("Enter die facevalue: ");
+            System.out.println("Enter die face value: ");
             currentGuessDieFaceValue = scanner.nextByte();
             scanner.nextLine();
-            System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
+            //System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
         } else if (bidOrCall.equals("l")) {
             callLie = true;
             isActiveRound = false;
@@ -139,7 +139,7 @@ public class Game {
         }
     }
 
-    // TODO: 8/8/2021 lie crashes program if called after first round. 
+    // TODO: 8/8/2021 lie crashes program if called on ply2 after first round of bets.
     public void checkLie(Player activePlayer) {
         isALie = !diceOnTable.containsKey(previousBidDieFaceValue) || diceOnTable.get(previousBidDieFaceValue) < previousBidDieQty;
         if (isALie) {
@@ -178,5 +178,6 @@ public class Game {
             isRoundStartingPlayer = true;
         }
     }
-    
+
 }
+
