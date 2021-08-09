@@ -45,6 +45,7 @@ public class Game {
     }
 
     public void round() {
+        diceOnTable.clear();
         System.out.println("New Round");
         rollAll();
         isActiveRound = true;
@@ -71,7 +72,7 @@ public class Game {
             }
         }
     }
-    
+
     public void turn() {
         for (Player activePlayer : playerList) {
             System.out.println(activePlayer.playerName + "'s turn.");
@@ -114,8 +115,8 @@ public class Game {
             currentGuessDieQty = scanner.nextByte();
             System.out.println("Enter die facevalue: ");
             currentGuessDieFaceValue = scanner.nextByte();
-            System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
             scanner.nextLine();
+            System.out.println("The current bid is " + currentGuessDieQty + "x " + currentGuessDieFaceValue);
         } else if (bidOrCall.equals("l")) {
             callLie = true;
             isActiveRound = false;
@@ -138,7 +139,6 @@ public class Game {
         }
     }
 
-    // TODO: 8/8/2021 bugged when player calls lie and previous bid was true, lie always returns as a lie by play1 and play1 always loses. 
     // TODO: 8/8/2021 lie crashes program if called after first round. 
     public void checkLie(Player activePlayer) {
         isALie = !diceOnTable.containsKey(previousBidDieFaceValue) || diceOnTable.get(previousBidDieFaceValue) < previousBidDieQty;
@@ -148,7 +148,8 @@ public class Game {
             playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice.remove(0);
             isActiveRound = false;
 //            System.out.println(playerList.get(playerList.indexOf(activePlayer) - 1).cup.dice);
-        } else {
+        }
+        else if (!isALie){
             System.out.println("Bid was not a lie you lose a die");
             playerList.get(playerList.indexOf(activePlayer)).cup.dice.remove(0);
             isActiveRound = false;
@@ -174,7 +175,6 @@ public class Game {
     public void showHands() {
         for (Player players : playerList) {
             System.out.println(players.playerName + "'s Hand " + players.cup.displayHand());
-            diceOnTable.clear();
             isRoundStartingPlayer = true;
         }
     }
